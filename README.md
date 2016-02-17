@@ -1,1 +1,1 @@
-# Nettverk_og_Sky_2016
+# Nettverk og skytjenester, HiOA 2016
