@@ -7,6 +7,7 @@ package trafficlight;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -16,7 +17,7 @@ import javax.swing.event.ChangeListener;
  * @author s198752
  */
 public class Server_Window extends JPanel{
-    private JTextArea logArea, clientListArea;
+    public static JTextArea logArea, clientListArea;
     private JSlider redSlider, yellowSlider, greenSlider;
     private Icon redIcon, greenIcon, yellowIcon;
     private JRadioButton offButton, redButton, yellowButton, greenButton;
@@ -26,6 +27,7 @@ public class Server_Window extends JPanel{
     private String defaultColor = "Red";
     private JLabel pictureLabel;
     private ImageIcon image;
+    public static ArrayList<String> clients;
     
     public Server_Window(){
           
@@ -122,10 +124,10 @@ public class Server_Window extends JPanel{
         add(pictureLabel, BorderLayout.LINE_END);
         setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
         
-        
+        //createAndShowGUI();
     }
    
-    public static void createAndShowGUI(){
+    public void createAndShowGUI(){
         JFrame frame = new JFrame("Trafficlight");
         
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -150,8 +152,8 @@ public class Server_Window extends JPanel{
         return clientListArea;
     }
 
-    public void setClientListArea(JTextArea clientListArea) {
-        this.clientListArea = clientListArea;
+    public void addClient(String ip) {
+        clientListArea.append(ip);
     }
 
     public int getRedDuration() {
@@ -190,7 +192,17 @@ public class Server_Window extends JPanel{
         return image;
     }
 
-    public void setImage(ImageIcon image) {
-        this.image = image;
+    public void setImage(String color) {
+        switch(color){
+            case "red" : image = new ImageIcon(getClass().getClassLoader().getResource("resources/red_light.jpg"));
+                break;
+            case "yellow" : image = new ImageIcon(getClass().getClassLoader().getResource("resources/yellow_light.jpg"));
+                break;
+            case "green" : image = new ImageIcon(getClass().getClassLoader().getResource("resources/green_light.jpg"));
+                break;
+            
+                       
+        }
+        
     }
 }

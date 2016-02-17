@@ -14,115 +14,96 @@ import java.util.concurrent.TimeUnit;
 
 public class TCP_Server
 {
-    static int counter_green;
-    static int counter_yellow;
-    static int counter_red;
-    static int global_counter;
+    static int timer_green;
+    static int timer_yellow;
+    static int timer_red;
+    static int global_timer;
+    static int client_counter;    
     static String current_light;
-    static int portNumber;
-    static Server_Window w;
-    static ServerSocket serverSocket;
+    static int portNumber;    
+    
     public static void main(String[] args) throws IOException
     {
-        w = new Server_Window();
-        Server_Window.createAndShowGUI();
+        Server_Window w = new Server_Window();
+        w.createAndShowGUI();
         
         portNumber = 5555; // Default port to use
 
-        if (args.length > 0)
-        {
-            if (args.length == 1)
-                portNumber = Integer.parseInt(args[0]);
-            else
-            {
-                System.err.println("Usage: java EchoUcaseServerMutiClients [<port number>]");
-                System.exit(1);
-            }
-        }
-
-        System.out.println("Hi, I am the EchoUCase Multi-client TCP server.");
-
-        try{
-          // Create server socket with the given port number
-          serverSocket = new ServerSocket(portNumber);
-        } catch (IOException e)
-        {
-            System.out.println("Exception occurred when trying to listen on port "
-                    + portNumber + " or listening for a connection");
-            System.out.println(e.getMessage());
-        }
-                
+        System.out.println("HEI");                
         
         // scheduled task which runs every second
-        counter_green = 20;
-        counter_yellow = 5;
-        counter_red = 10;
-        
-        global_counter = counter_red;
+        timer_green = 20;
+        timer_yellow = 5;
+        timer_red = 3;      
+        global_timer = timer_red;
+        client_counter = 0;
         current_light = "red";
         
-        Runnable runnable = new Runnable()
-        {
-            @Override
-            public void run() 
+        // generate two threads, one for sockets and one for timer
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
+        
+        // timer that runs every second
+        Runnable timer = () -> {                    
+            
+            // check parameters in server window
+            timer_red = w.getRedDuration();
+            timer_yellow = w.getYellowDuration();
+            timer_green = w.getGreenDuration();
+
+            System.out.println(current_light + ": " + global_timer);
+
+            if(global_timer == 1)
             {
-                // check parameters in server window
-                counter_red = w.getRedDuration();
-                counter_yellow = w.getYellowDuration();
-                counter_green = w.getGreenDuration();
-                
-                
-                
-                System.out.println(current_light + ": " + global_counter);
-                
-                if(global_counter == 1)
-                {
-                    switch (current_light) {
-                        case "red":
-                            current_light = "green";
-                            global_counter = counter_green;
-                            break;
-                        case "yellow":
-                            current_light = "red";
-                            global_counter = counter_red;
-                            break;
-                        default:
-                            current_light = "yellow";
-                            global_counter = counter_yellow;
-                            break;
-                    }
+                switch (current_light) {
+                    case "red":
+                        current_light = "green";                            
+                        global_timer = timer_green+1;
+
+                        break;
+                    case "yellow":
+                        current_light = "red";
+                        global_timer = timer_red+1;
+                        break;
+                    default:
+                        current_light = "yellow";
+                        global_timer = timer_yellow+1;
+                        break;
                 }
-                
-                global_counter--;
-                
-                checkForClients();
+
+                // update image
+                //w.setImage(current_light);
+            }
+
+            global_timer--; 
+        };        
+        
+        // Thread that listens to incoming TCP socket connections
+        Runnable incomingSockets = () -> {
+            try (
+                // Create server socket with the given port number
+                ServerSocket serverSocket = new ServerSocket(portNumber);
+            )
+            {
+                // continuously listening for clients 
+                while (true)
+                {
+                    // create and start a new ClientServer thread for each connected client
+                    ClientServer clientserver = new ClientServer(serverSocket.accept());
+                    clientserver.start();
+                    System.out.println("a");
+                }
+            } catch (IOException e)
+            {
+                System.out.println("Exception occurred when trying to listen on port "
+                        + portNumber + " or listening for a connection");
+                System.out.println(e.getMessage());
             }
         };
-
-        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(runnable, 0, 1, TimeUnit.SECONDS);
-    }
-    
-    public static void checkForClients(){
-        try 
-        {
-            System.out.println("C");
-            // continuously listening for clients 
-            
-                // create and start a new ClientServer thread for each connected client
-                ClientServer clientserver = new ClientServer(serverSocket.accept());
-                System.out.println("E");
-                clientserver.start();
-                System.out.println("D");
-                //w.getClientListArea().append(clientserver.getIP());
-     
-                    
-        } catch (IOException e)
-        {
-            System.out.println("Exception occurred when trying to listen on port "
-                    + portNumber + " or listening for a connection");
-            System.out.println(e.getMessage());
-        }
+        
+        executor.scheduleAtFixedRate(timer, 0, 1, TimeUnit.SECONDS);
+        executor.schedule(incomingSockets, 0, TimeUnit.SECONDS);
+        
+        
     }
 }
 
@@ -130,39 +111,32 @@ class ClientServer extends Thread
 {
     Socket connectSocket;
     InetAddress clientAddr;
-    String IP;
+    
+    // scheduled task which runs every second
+        int timer_green = 20;
+        int timer_yellow = 5;
+        int timer_red = 3;      
+        int global_timer = timer_red;
+        int client_counter = 0;
+        String current_light = "red";
 
     public ClientServer(Socket connectSocket)
     {
-        System.out.println("B");
         this.connectSocket = connectSocket;
         clientAddr = connectSocket.getInetAddress();
-        
-        
     }
-    
-    
-
 
     public void run()
     {
-        System.out.println("F");
         try (
                 // Create server socket with the given port number
-                PrintWriter out =
-                        new PrintWriter(connectSocket.getOutputStream(), true);
+                PrintWriter out = new PrintWriter(connectSocket.getOutputStream(), true);
                 // Stream reader from the connection socket
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(connectSocket.getInputStream()));
+                BufferedReader in = new BufferedReader( new InputStreamReader(connectSocket.getInputStream()));
         )
         {
-
-            IP = InetAddress.getLocalHost().getHostAddress();
-            System.out.println("A");
-            /*
             String receivedText;
             // read from the connection socket
-            
             while (((receivedText = in.readLine())!=null))
             {
                 System.out.println("Client [" + clientAddr.getHostAddress() + "]: > " + receivedText);
@@ -171,9 +145,9 @@ class ClientServer extends Thread
                 out.println(ucaseText);
                 System.out.println("Server [" + InetAddress.getLocalHost().getHostAddress() + "]: > " + ucaseText);
             }
-                    */
-
+                 
             // close the connection socket
+            System.out.println("Exiting");
             connectSocket.close();
 
         } catch (IOException e)
@@ -182,10 +156,7 @@ class ClientServer extends Thread
             System.out.println(e.getMessage());
         }
     }
-    
-    public String getIP(){
-        return IP;
-    }
 }
+
 
 
