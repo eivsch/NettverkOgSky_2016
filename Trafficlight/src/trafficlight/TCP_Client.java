@@ -55,16 +55,18 @@ public class TCP_Client
       BufferedReader keyIn = new BufferedReader(
       new InputStreamReader(System.in))
     )
-    {
-      String userInput;
-      
-      System.out.println("Client [" + InetAddress.getLocalHost().getHostAddress() + "]: > ");
-      
-      String receivedText;
-      
-      while((receivedText = in.readLine()) != null){
-        System.out.println("Server [" + hostName + "]: > " + receivedText);
-        //System.out.print("Client [" + InetAddress.getLocalHost().getHostAddress() + "]: > ");
+    {    
+        System.out.println("Client [" + InetAddress.getLocalHost().getHostAddress() + "]: > ");
+
+        String receivedLight;
+        String previousLight = "";
+
+        while((receivedLight = in.readLine()) != null){
+          //System.out.println("Server [" + hostName + "]: > " + recievedLight);
+          if(!receivedLight.equals(previousLight)){
+              w.changeLight(receivedLight);
+              previousLight = receivedLight;
+          }
       }
       
       /*
