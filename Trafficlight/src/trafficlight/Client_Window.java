@@ -15,13 +15,10 @@ import java.awt.Graphics;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class Client_Window extends JFrame{
-    private JLabel pictureLabel;
-    private ImageIcon image;
-    private DrawPanel panel;
+    private final DrawPanel panel;
     
     // constructor
     public Client_Window(){
