@@ -148,7 +148,7 @@ class ClientServer extends Thread
                 System.out.print("");  
                 boolean test = TCP_Server.changed;
                 if(test){
-                    System.out.println("Sending changes to client: " + TCP_Server.current_light);
+                    //System.out.println("Sending changes to client: " + TCP_Server.current_light);
                     out.println(TCP_Server.current_light);                    
                 }
             }

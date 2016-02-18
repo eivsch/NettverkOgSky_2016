@@ -20,12 +20,8 @@ import javax.swing.event.ChangeListener;
 public class Server_Window extends JFrame{
     public static JTextArea logArea, clientListArea;
     private JSlider redSlider, yellowSlider, greenSlider;
-    private Icon redIcon, greenIcon, yellowIcon;
-    private JRadioButton offButton, redButton, yellowButton, greenButton;
-    //private JPanel leftColumn, rightColumn, topLeft, bottomLeft, radioPanel, sliderPanel, picturePanel; 
     private final String labelOff = "Off", labelRed = "Red", labelYellow = "Yellow", labelGreen = "Green";
     private int redDuration = 10, yellowDuration = 5, greenDuration = 15;
-    private String defaultColor = "Red";
     private JLabel pictureLabel;
     private ImageIcon image;
     public static ArrayList<String> clients;
@@ -34,50 +30,16 @@ public class Server_Window extends JFrame{
     
     public Server_Window(){          
         super("Trafficlight - group 13");
-        
-        //Create the radio buttons.
-        offButton = new JRadioButton(labelOff);
-        offButton.setActionCommand(labelOff);
-
-        redButton = new JRadioButton(labelRed);
-        redButton.setActionCommand(labelRed);
-        redButton.setSelected(true);
-
-        yellowButton = new JRadioButton(labelYellow);
-        yellowButton.setActionCommand(labelYellow);
-
-        greenButton = new JRadioButton(labelGreen);
-        greenButton.setActionCommand(labelGreen);
-        
-        ActionListener al = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                AbstractButton aButton = (AbstractButton) actionEvent.getSource();
-                defaultColor = aButton.getText();
-                
-            }
-        };
-        
-        redButton.addActionListener(al); 
-        yellowButton.addActionListener(al); 
-        greenButton.addActionListener(al);
-
-        //Group the radio buttons.
-        ButtonGroup group = new ButtonGroup();
-        group.add(offButton);
-        group.add(redButton);
-        group.add(yellowButton);
-        group.add(greenButton);
        
         //Put the radio buttons in a column in a panel.
-        JPanel radioPanel = new JPanel(new GridLayout(0, 1));
-        radioPanel.add(offButton);
-        radioPanel.add(redButton);
-        radioPanel.add(yellowButton);
-        radioPanel.add(greenButton);
+        JPanel labelPanel = new JPanel(new GridLayout(0,1,15,15));
+        labelPanel.add(new JLabel("RED", SwingConstants.RIGHT));
+        labelPanel.add(new JLabel("YELLOW", SwingConstants.RIGHT));
+        labelPanel.add(new JLabel("GREEN", SwingConstants.RIGHT));
         
-        redSlider = new JSlider(JSlider.HORIZONTAL, 5, 50, 10);
+        redSlider = new JSlider(JSlider.HORIZONTAL, 5, 45, 10);
         redSlider.setMinorTickSpacing(1);
-        redSlider.setMajorTickSpacing(5);
+        redSlider.setMajorTickSpacing(10);
         redSlider.setPaintTicks(true);
         redSlider.setPaintLabels(true);
         yellowSlider = new JSlider(JSlider.HORIZONTAL, 2, 12, 5);
@@ -85,9 +47,9 @@ public class Server_Window extends JFrame{
         yellowSlider.setMajorTickSpacing(2);
         yellowSlider.setPaintTicks(true);
         yellowSlider.setPaintLabels(true);
-        greenSlider = new JSlider(JSlider.HORIZONTAL, 5, 50, 15);
+        greenSlider = new JSlider(JSlider.HORIZONTAL, 5, 45, 15);
         greenSlider.setMinorTickSpacing(1);
-        greenSlider.setMajorTickSpacing(5);
+        greenSlider.setMajorTickSpacing(10);
         greenSlider.setPaintTicks(true);
         greenSlider.setPaintLabels(true);
         
@@ -124,11 +86,11 @@ public class Server_Window extends JFrame{
             }		
         });
         
-        JPanel sliderPanel = new JPanel(new GridLayout(0,1));
-        sliderPanel.add(new JLabel(""));
+        JPanel sliderPanel = new JPanel(new GridLayout(0,1,15,15));
         sliderPanel.add(redSlider);
         sliderPanel.add(yellowSlider);
         sliderPanel.add(greenSlider);
+        
         
         // set up text areas
         logArea = new JTextArea();
@@ -168,13 +130,13 @@ public class Server_Window extends JFrame{
         masterPanel.add(grid, BorderLayout.PAGE_START);
         masterPanel.add(under, BorderLayout.CENTER);
         
-        grid.add(radioPanel);
+        grid.add(labelPanel);
         grid.add(sliderPanel);
         grid.add(dp);
         under.add(textAreaPanel, BorderLayout.CENTER);
         //setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
         this.getContentPane().add(masterPanel);
-        setSize(600,800);
+        setSize(400,800);
         
         
         
