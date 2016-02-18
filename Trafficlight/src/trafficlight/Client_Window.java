@@ -35,6 +35,7 @@ public class Client_Window extends JFrame{
         setSize(70, 180);
         setResizable(false);
         setVisible(true);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
     
         public void changeLight(String color) {

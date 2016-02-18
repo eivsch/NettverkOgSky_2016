@@ -67,10 +67,6 @@ public class Server_Window extends JFrame{
         group.add(redButton);
         group.add(yellowButton);
         group.add(greenButton);
-
-        //Set up the picture label.
-        image = new ImageIcon(getClass().getClassLoader().getResource("resources/red_light.jpg"));
-        pictureLabel = new JLabel(image);
        
         //Put the radio buttons in a column in a panel.
         JPanel radioPanel = new JPanel(new GridLayout(0, 1));
