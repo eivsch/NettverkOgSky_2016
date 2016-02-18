@@ -249,14 +249,7 @@ public class Server_Window extends JFrame{
     }
 
     public void setImage(String color) {
-        switch(color){
-            case "red" : dp.changePicture("red_light.jpg");
-                break;
-            case "yellow" : dp.changePicture("yellow_light.jpg");
-                break;
-            case "green" : dp.changePicture("green_light.jpg");
-                break;                 
-        }      
+        dp.changePicture(color + "_light.jpg");
     }
 
     
