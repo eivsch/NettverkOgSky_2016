@@ -39,14 +39,7 @@ public class Client_Window extends JFrame{
     }
     
         public void changeLight(String color) {
-        switch(color){
-            case "red" : panel.changePicture("red_light.jpg");
-                break;
-            case "yellow" : panel.changePicture("yellow_light.jpg");
-                break;
-            case "green" : panel.changePicture("green_light.jpg");
-                break;                 
-        }      
+            panel.changePicture(color + "_light.jpg");
     }
     
     private class DrawPanel extends JPanel{
