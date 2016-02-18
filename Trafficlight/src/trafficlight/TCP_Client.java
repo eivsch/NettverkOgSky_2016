@@ -60,6 +60,14 @@ public class TCP_Client
       
       System.out.println("Client [" + InetAddress.getLocalHost().getHostAddress() + "]: > ");
       
+      String receivedText;
+      
+      while((receivedText = in.readLine()) != null){
+        System.out.println("Server [" + hostName + "]: > " + receivedText);
+        //System.out.print("Client [" + InetAddress.getLocalHost().getHostAddress() + "]: > ");
+      }
+      
+      /*
       while((userInput = keyIn.readLine()) != null && !userInput.isEmpty())
       {
         // write keyboard input to the socket
@@ -71,6 +79,8 @@ public class TCP_Client
         System.out.println("Server [" + hostName + "]: > " + receivedText);
         System.out.print("Client [" + InetAddress.getLocalHost().getHostAddress() + "]: > ");
       }
+        */
+        System.out.println("Client exiting");
     }
     catch(UnknownHostException e)
     {

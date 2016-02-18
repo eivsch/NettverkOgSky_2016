@@ -74,19 +74,19 @@ public class Server_Window extends JPanel{
         radioPanel.add(yellowButton);
         radioPanel.add(greenButton);
         
-        redSlider = new JSlider(JSlider.HORIZONTAL, 0, 50, 25);
-        redSlider.setMinorTickSpacing(5);
-        redSlider.setMajorTickSpacing(10);
+        redSlider = new JSlider(JSlider.HORIZONTAL, 5, 50, 10);
+        redSlider.setMinorTickSpacing(1);
+        redSlider.setMajorTickSpacing(5);
         redSlider.setPaintTicks(true);
         redSlider.setPaintLabels(true);
-        yellowSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, 5);
-        yellowSlider.setMinorTickSpacing(5);
-        yellowSlider.setMajorTickSpacing(10);
+        yellowSlider = new JSlider(JSlider.HORIZONTAL, 2, 12, 5);
+        yellowSlider.setMinorTickSpacing(1);
+        yellowSlider.setMajorTickSpacing(2);
         yellowSlider.setPaintTicks(true);
         yellowSlider.setPaintLabels(true);
-        greenSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
-        greenSlider.setMinorTickSpacing(5);
-        greenSlider.setMajorTickSpacing(10);
+        greenSlider = new JSlider(JSlider.HORIZONTAL, 5, 50, 15);
+        greenSlider.setMinorTickSpacing(1);
+        greenSlider.setMajorTickSpacing(5);
         greenSlider.setPaintTicks(true);
         greenSlider.setPaintLabels(true);
         
@@ -115,6 +115,7 @@ public class Server_Window extends JPanel{
         });
         
         JPanel sliderPanel = new JPanel(new GridLayout(0,1));
+        sliderPanel.add(new JLabel(""));
         sliderPanel.add(redSlider);
         sliderPanel.add(yellowSlider);
         sliderPanel.add(greenSlider);
@@ -123,6 +124,9 @@ public class Server_Window extends JPanel{
         add(sliderPanel, BorderLayout.CENTER);
         add(pictureLabel, BorderLayout.LINE_END);
         setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+        
+        
+        
         
         //createAndShowGUI();
     }

@@ -14,13 +14,14 @@ import java.util.concurrent.TimeUnit;
 
 public class TCP_Server
 {
-    static int timer_green;
+    public static int timer_green;
     static int timer_yellow;
     static int timer_red;
     static int global_timer;
     static int client_counter;    
     static String current_light;
     static int portNumber;    
+    public static boolean changed;
     
     public static void main(String[] args) throws IOException
     {
@@ -28,13 +29,14 @@ public class TCP_Server
         w.createAndShowGUI();
         
         portNumber = 5555; // Default port to use
-
+        changed = false;
+        
         System.out.println("HEI");                
         
         // scheduled task which runs every second
         timer_green = 20;
         timer_yellow = 5;
-        timer_red = 3;      
+        timer_red = 5;      
         global_timer = timer_red;
         client_counter = 0;
         current_light = "red";
@@ -50,15 +52,15 @@ public class TCP_Server
             timer_yellow = w.getYellowDuration();
             timer_green = w.getGreenDuration();
 
-            System.out.println(current_light + ": " + global_timer);
-
+            //System.out.println(current_light + ": " + global_timer);
+            changed = false;
+            
             if(global_timer == 1)
             {
                 switch (current_light) {
                     case "red":
                         current_light = "green";                            
                         global_timer = timer_green+1;
-
                         break;
                     case "yellow":
                         current_light = "red";
@@ -69,9 +71,10 @@ public class TCP_Server
                         global_timer = timer_yellow+1;
                         break;
                 }
-
+                System.out.println("Changing light!");
+                changed = true;
                 // update image
-                //w.setImage(current_light);
+                //w.setImage(current_light);                
             }
 
             global_timer--; 
@@ -90,7 +93,6 @@ public class TCP_Server
                     // create and start a new ClientServer thread for each connected client
                     ClientServer clientserver = new ClientServer(serverSocket.accept());
                     clientserver.start();
-                    System.out.println("a");
                 }
             } catch (IOException e)
             {
@@ -112,18 +114,13 @@ class ClientServer extends Thread
     Socket connectSocket;
     InetAddress clientAddr;
     
-    // scheduled task which runs every second
-        int timer_green = 20;
-        int timer_yellow = 5;
-        int timer_red = 3;      
-        int global_timer = timer_red;
-        int client_counter = 0;
-        String current_light = "red";
-
+    
+    
     public ClientServer(Socket connectSocket)
     {
         this.connectSocket = connectSocket;
         clientAddr = connectSocket.getInetAddress();
+        System.out.println("Client connected: " + clientAddr);
     }
 
     public void run()
@@ -135,6 +132,26 @@ class ClientServer extends Thread
                 BufferedReader in = new BufferedReader( new InputStreamReader(connectSocket.getInputStream()));
         )
         {
+            System.out.println("Changed: " + TCP_Server.changed);
+            
+            String sendToClient;
+            
+            while((sendToClient = TCP_Server.current_light) != null && !sendToClient.isEmpty()){
+                System.out.print("");  
+                boolean test = TCP_Server.changed;
+                if(test){
+                    System.out.println("Sending changes to client: " + TCP_Server.current_light);
+                    out.println(TCP_Server.current_light);                    
+                }
+            }
+            
+            /*
+            if(TCP_Server.global_timer == 2){
+                System.out.println("test");
+                out.println(TCP_Server.current_light);
+            }
+            */
+            /*
             String receivedText;
             // read from the connection socket
             while (((receivedText = in.readLine())!=null))
@@ -145,9 +162,10 @@ class ClientServer extends Thread
                 out.println(ucaseText);
                 System.out.println("Server [" + InetAddress.getLocalHost().getHostAddress() + "]: > " + ucaseText);
             }
+            */
                  
             // close the connection socket
-            System.out.println("Exiting");
+            System.out.println("Server Exiting");
             connectSocket.close();
 
         } catch (IOException e)
