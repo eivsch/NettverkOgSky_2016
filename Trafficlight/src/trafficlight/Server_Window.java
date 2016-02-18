@@ -16,7 +16,7 @@ import javax.swing.event.ChangeListener;
  *
  * @author s198752
  */
-public class Server_Window extends JPanel{
+public class Server_Window extends JFrame{
     public static JTextArea logArea, clientListArea;
     private JSlider redSlider, yellowSlider, greenSlider;
     private Icon redIcon, greenIcon, yellowIcon;
@@ -28,11 +28,11 @@ public class Server_Window extends JPanel{
     private JLabel pictureLabel;
     private ImageIcon image;
     public static ArrayList<String> clients;
+    private JPanel masterPanel, grid, under;
     
-    public Server_Window(){
-          
-        super(new BorderLayout());
-
+    public Server_Window(){          
+        super("Trafficlight - group 13");
+        
         //Create the radio buttons.
         offButton = new JRadioButton(labelOff);
         offButton.setActionCommand(labelOff);
@@ -120,17 +120,41 @@ public class Server_Window extends JPanel{
         sliderPanel.add(yellowSlider);
         sliderPanel.add(greenSlider);
         
-        add(radioPanel, BorderLayout.LINE_START);
-        add(sliderPanel, BorderLayout.CENTER);
-        add(pictureLabel, BorderLayout.LINE_END);
-        setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+        // set up text areas
+        logArea = new JTextArea();
+        clientListArea = new JTextArea();
         
+        logArea.setEditable(false);
+        clientListArea.setEditable(false);
+        
+        JScrollPane scroll1 = new JScrollPane(logArea);
+        JScrollPane scroll2 = new JScrollPane(clientListArea);
+        
+        JPanel textAreaPanel = new JPanel(new GridLayout(0,2));
+        textAreaPanel.add(logArea);
+        textAreaPanel.add(clientListArea);
+        
+        // add all the components to the main server window
+        masterPanel = new JPanel(new BorderLayout());
+        grid = new JPanel(new GridLayout(1, 3, 5, 5));
+        under = new JPanel(new BorderLayout());
+        masterPanel.add(grid, BorderLayout.PAGE_START);
+        masterPanel.add(under, BorderLayout.CENTER);
+        
+        grid.add(radioPanel);
+        grid.add(sliderPanel);
+        grid.add(pictureLabel);
+        under.add(textAreaPanel, BorderLayout.CENTER);
+        //setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+        this.getContentPane().add(masterPanel);
+        setSize(600,800);
         
         
         
         //createAndShowGUI();
     }
    
+    /*
     public void createAndShowGUI(){
         JFrame frame = new JFrame("Trafficlight");
         
@@ -139,10 +163,11 @@ public class Server_Window extends JPanel{
         JComponent newContentPane = new Server_Window();
         newContentPane.setOpaque(true);
         frame.setContentPane(newContentPane);
-        
+        //frame.setSize(800, 400);
         frame.pack();
         frame.setVisible(true);
     }
+    */
     
     public JTextArea getLogArea() {
         return logArea;

@@ -26,7 +26,8 @@ public class TCP_Server
     public static void main(String[] args) throws IOException
     {
         Server_Window w = new Server_Window();
-        w.createAndShowGUI();
+        w.setVisible(true);
+//w.createAndShowGUI();
         
         portNumber = 5555; // Default port to use
         changed = false;
