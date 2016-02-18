@@ -10,6 +10,7 @@ import java.io.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
 
 public class TCP_Server
@@ -26,8 +27,10 @@ public class TCP_Server
     public static void main(String[] args) throws IOException
     {
         Server_Window w = new Server_Window();
+        w.setDefaultCloseOperation(EXIT_ON_CLOSE);
         w.setVisible(true);
-//w.createAndShowGUI();
+        w.setResizable(false);
+        //w.createAndShowGUI();
         
         portNumber = 5555; // Default port to use
         changed = false;
@@ -74,8 +77,9 @@ public class TCP_Server
                 }
                 System.out.println("Changing light!");
                 changed = true;
+                
                 // update image
-                //w.setImage(current_light);                
+                w.setImage(current_light);                
             }
 
             global_timer--; 

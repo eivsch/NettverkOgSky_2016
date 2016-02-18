@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -23,12 +24,13 @@ public class Server_Window extends JFrame{
     private JRadioButton offButton, redButton, yellowButton, greenButton;
     //private JPanel leftColumn, rightColumn, topLeft, bottomLeft, radioPanel, sliderPanel, picturePanel; 
     private final String labelOff = "Off", labelRed = "Red", labelYellow = "Yellow", labelGreen = "Green";
-    private int redDuration = 25, yellowDuration = 5, greenDuration = 50;
+    private int redDuration = 10, yellowDuration = 5, greenDuration = 15;
     private String defaultColor = "Red";
     private JLabel pictureLabel;
     private ImageIcon image;
     public static ArrayList<String> clients;
     private JPanel masterPanel, grid, under;
+    private DrawPanel dp;
     
     public Server_Window(){          
         super("Trafficlight - group 13");
@@ -127,12 +129,29 @@ public class Server_Window extends JFrame{
         logArea.setEditable(false);
         clientListArea.setEditable(false);
         
-        JScrollPane scroll1 = new JScrollPane(logArea);
-        JScrollPane scroll2 = new JScrollPane(clientListArea);
+        Border border = BorderFactory.createLineBorder(Color.BLACK);        
         
-        JPanel textAreaPanel = new JPanel(new GridLayout(0,2));
-        textAreaPanel.add(logArea);
-        textAreaPanel.add(clientListArea);
+        logArea.setBorder(BorderFactory.createCompoundBorder(border, 
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+        clientListArea.setBorder(BorderFactory.createCompoundBorder(border, 
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+        
+        JScrollPane scroll1 = new JScrollPane(logArea);
+        JScrollPane scroll2 = new JScrollPane(clientListArea);  
+        
+        JPanel rowLabels = new JPanel(new GridLayout(0,2));
+        JPanel rowTextArea = new JPanel(new GridLayout(0,2));
+        JPanel textAreaPanel = new JPanel(new BorderLayout());
+        rowLabels.add(new JLabel("Log:"));
+        rowLabels.add(new JLabel("Clients:"));
+        rowTextArea.add(scroll1);
+        rowTextArea.add(scroll2);
+        textAreaPanel.add(rowLabels, BorderLayout.PAGE_START);
+        textAreaPanel.add(rowTextArea, BorderLayout.CENTER);
+        
+        // DrawPanel
+        dp = new DrawPanel();
+        dp.changePicture("red_light.jpg");
         
         // add all the components to the main server window
         masterPanel = new JPanel(new BorderLayout());
@@ -143,7 +162,7 @@ public class Server_Window extends JFrame{
         
         grid.add(radioPanel);
         grid.add(sliderPanel);
-        grid.add(pictureLabel);
+        grid.add(dp);
         under.add(textAreaPanel, BorderLayout.CENTER);
         //setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
         this.getContentPane().add(masterPanel);
@@ -223,15 +242,28 @@ public class Server_Window extends JFrame{
 
     public void setImage(String color) {
         switch(color){
-            case "red" : image = new ImageIcon(getClass().getClassLoader().getResource("resources/red_light.jpg"));
+            case "red" : dp.changePicture("red_light.jpg");
                 break;
-            case "yellow" : image = new ImageIcon(getClass().getClassLoader().getResource("resources/yellow_light.jpg"));
+            case "yellow" : dp.changePicture("yellow_light.jpg");
                 break;
-            case "green" : image = new ImageIcon(getClass().getClassLoader().getResource("resources/green_light.jpg"));
-                break;
-            
-                       
+            case "green" : dp.changePicture("green_light.jpg");
+                break;                 
+        }      
+    }
+
+    
+    private class DrawPanel extends JPanel{
+        Image image1;
+        public void changePicture(String path){
+            image1 = new ImageIcon(path).getImage();
+            repaint();
         }
-        
+        public void paintComponent(Graphics g)
+        {	
+            setBackground(Color.WHITE);
+            g.setColor(Color.WHITE);
+            g.fillRect(10,10,134,76);
+            g.drawImage(image1,10,10,this);
+        }
     }
 }
