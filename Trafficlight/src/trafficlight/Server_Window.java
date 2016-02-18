@@ -53,10 +53,13 @@ public class Server_Window extends JFrame{
             public void actionPerformed(ActionEvent actionEvent) {
                 AbstractButton aButton = (AbstractButton) actionEvent.getSource();
                 defaultColor = aButton.getText();
+                
             }
         };
         
-        redButton.addActionListener(al); yellowButton.addActionListener(al); greenButton.addActionListener(al);
+        redButton.addActionListener(al); 
+        yellowButton.addActionListener(al); 
+        greenButton.addActionListener(al);
 
         //Group the radio buttons.
         ButtonGroup group = new ButtonGroup();
@@ -96,15 +99,21 @@ public class Server_Window extends JFrame{
             @Override 
             public void stateChanged(ChangeEvent e) { 
                 JSlider source = (JSlider) e.getSource();
-                redDuration = source.getValue();
+                if(!source.getValueIsAdjusting()){
+                    redDuration = source.getValue();
+                    logArea.append("New red duration (sec): " + redDuration + "\n");
+                }
             }		
         });
         
         yellowSlider.addChangeListener(new ChangeListener() { 
             @Override 
             public void stateChanged(ChangeEvent e) { 
-                JSlider source = (JSlider) e.getSource();
-                yellowDuration = source.getValue();
+                JSlider source = (JSlider) e.getSource();                
+                if(!source.getValueIsAdjusting()){
+                    yellowDuration = source.getValue();
+                    logArea.append("New yellow duration (sec): " + yellowDuration + "\n");
+                }
             }		
         });
         
@@ -112,7 +121,10 @@ public class Server_Window extends JFrame{
             @Override 
             public void stateChanged(ChangeEvent e) { 
                 JSlider source = (JSlider) e.getSource();
-                greenDuration = source.getValue();
+                if(!source.getValueIsAdjusting()){
+                    greenDuration = source.getValue();                
+                    logArea.append("New green duration (sec): " + greenDuration + "\n");
+                }
             }		
         });
         
@@ -188,7 +200,7 @@ public class Server_Window extends JFrame{
     }
     */
     
-    public JTextArea getLogArea() {
+    public static JTextArea getLogArea() {
         return logArea;
     }
 
@@ -196,7 +208,7 @@ public class Server_Window extends JFrame{
         this.logArea = logArea;
     }
 
-    public JTextArea getClientListArea() {
+    public static JTextArea getClientListArea() {
         return clientListArea;
     }
 
@@ -259,9 +271,8 @@ public class Server_Window extends JFrame{
             repaint();
         }
         public void paintComponent(Graphics g)
-        {	
-            setBackground(Color.WHITE);
-            g.setColor(Color.WHITE);
+        {
+            g.setColor(new Color(238,238,238));
             g.fillRect(10,10,134,76);
             g.drawImage(image1,10,10,this);
         }

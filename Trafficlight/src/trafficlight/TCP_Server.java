@@ -75,8 +75,10 @@ public class TCP_Server
                         global_timer = timer_yellow+1;
                         break;
                 }
-                System.out.println("Changing light!");
+                
                 changed = true;
+                Server_Window.logArea.append("Color sent to clients: " + current_light + "\n");
+                
                 
                 // update image
                 w.setImage(current_light);                
@@ -126,6 +128,7 @@ class ClientServer extends Thread
         this.connectSocket = connectSocket;
         clientAddr = connectSocket.getInetAddress();
         System.out.println("Client connected: " + clientAddr);
+        Server_Window.getClientListArea().append(clientAddr.toString() + "\n");
     }
 
     public void run()

@@ -56,8 +56,7 @@ public class Client_Window extends JFrame{
         }
         public void paintComponent(Graphics g)
         {	
-            setBackground(Color.WHITE);
-            g.setColor(Color.WHITE);
+            g.setColor(new Color(238,238,238));
             g.fillRect(1,1,134,76);
             g.drawImage(image,1,1,this);
         }
