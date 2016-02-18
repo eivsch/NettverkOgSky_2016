@@ -1,17 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/**
+ * Nettverk og skytjenester
+ * HiOA vår 2016
+ * Oblig 1
+ * Gruppe 13:
+ * Gretar Ævarsson - s198586
+ * Eivind Schulstad - s198752
+ **/
+
 package trafficlight;
 
 import java.net.*;
 import java.io.*;
 
-/**
- *
- * @author Gretar
- */
 public class TCP_Client 
 {
   public static void main(String[] args) throws IOException 
@@ -21,68 +21,26 @@ public class TCP_Client
     String hostName = "127.0.0.1"; // default localhost
     int portNumber = 5555;
     
-    if(args.length > 0)
-    {
-      hostName = args[0];
-      
-      if(args.length > 1)
-      {
-        portNumber = Integer.parseInt(args[1]);
-        
-        if(args.length > 2)
-        {
-          System.err.println("Usage: java EchoClient [<host name>] [<port number>]");
-          System.exit(1);
-        }
-      }
-    }
-    
-    System.out.println("Hi, I'm TCP_client");
-    
     try
     (
       // create TCP socket
       Socket socket = new Socket(hostName, portNumber);
 
-      // Streamwriter
-      PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-
       // Streamreader
       BufferedReader in = new BufferedReader(
-      new InputStreamReader(socket.getInputStream()));
-
-      // Keboard input reader
-      BufferedReader keyIn = new BufferedReader(
-      new InputStreamReader(System.in))
+              new InputStreamReader(socket.getInputStream()));
     )
-    {    
-        System.out.println("Client [" + InetAddress.getLocalHost().getHostAddress() + "]: > ");
-
+    {   
+        // message received from server
         String receivedLight;
-        String previousLight = "";
 
         while((receivedLight = in.readLine()) != null){
-          //System.out.println("Server [" + hostName + "]: > " + recievedLight);
-          if(!receivedLight.equals(previousLight)){
-              w.changeLight(receivedLight);
-              previousLight = receivedLight;
-          }
-      }
-      
-      /*
-      while((userInput = keyIn.readLine()) != null && !userInput.isEmpty())
-      {
-        // write keyboard input to the socket
-        out.println(userInput);
+            // change to corresponding light when message is received  
+            w.changeLight(receivedLight);
+        }
         
-        // read from the socket and display
-        String receivedText = in.readLine();
-        
-        System.out.println("Server [" + hostName + "]: > " + receivedText);
-        System.out.print("Client [" + InetAddress.getLocalHost().getHostAddress() + "]: > ");
-      }
-        */
-        System.out.println("Client exiting");
+        in.close();
+        socket.close();
     }
     catch(UnknownHostException e)
     {

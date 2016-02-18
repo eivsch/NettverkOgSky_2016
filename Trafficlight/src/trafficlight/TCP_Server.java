@@ -1,8 +1,12 @@
 /**
- * 
- * trafficlight server-class!
- * 
+ * Nettverk og skytjenester
+ * HiOA vår 2016
+ * Oblig 1
+ * Gruppe 13:
+ * Gretar Ævarsson - s198586
+ * Eivind Schulstad - s198752
  **/
+
 package trafficlight;
 
 import java.net.*;
@@ -12,82 +16,83 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
-
 public class TCP_Server
 {
-    public static int timer_green;
-    static int timer_yellow;
-    static int timer_red;
-    static int global_timer;
-    static int client_counter;    
+    
+    static int timer_green;     // green time
+    static int timer_yellow;    // yellow time
+    static int timer_red;       // red time
+    static int countdown;    // timer used for countdown
     static String current_light;
-    static int portNumber;    
-    public static boolean changed;
+    static int portNumber;      
+    
+    // global variable, is true for 1 sec when traffic light changes
+    public static boolean global_changed;
     
     public static void main(String[] args) throws IOException
     {
+        // open the server window
         Server_Window w = new Server_Window();
         w.setDefaultCloseOperation(EXIT_ON_CLOSE);
         w.setVisible(true);
         w.setResizable(false);
-        //w.createAndShowGUI();
         
-        portNumber = 5555; // Default port to use
-        changed = false;
-        
-        System.out.println("HEI");                
-        
-        // scheduled task which runs every second
+        // Initialize
         timer_green = 20;
         timer_yellow = 5;
         timer_red = 5;      
-        global_timer = timer_red;
-        client_counter = 0;
+        countdown = timer_red;
         current_light = "red";
-        
+        portNumber = 5555; 
+        global_changed = false;
+
         // generate two threads, one for sockets and one for timer
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
         
-        // timer that runs every second
+        // first thread: timer that runs every second
         Runnable timer = () -> {                    
             
-            // check parameters in server window
+            // check if parameters have changed
             timer_red = w.getRedDuration();
             timer_yellow = w.getYellowDuration();
             timer_green = w.getGreenDuration();
 
-            //System.out.println(current_light + ": " + global_timer);
-            changed = false;
+            // set variable to false every second but is overidden below if 
+            // certain criterias are met
+            global_changed = false;
             
-            if(global_timer == 1)
+            // if timer is up
+            if(countdown == 1)
             {
+                // change light and reset countdown
                 switch (current_light) {
                     case "red":
                         current_light = "green";                            
-                        global_timer = timer_green+1;
+                        countdown = timer_green+1;
                         break;
                     case "yellow":
                         current_light = "red";
-                        global_timer = timer_red+1;
+                        countdown = timer_red+1;
                         break;
                     default:
                         current_light = "yellow";
-                        global_timer = timer_yellow+1;
+                        countdown = timer_yellow+1;
                         break;
                 }
                 
-                changed = true;
+                // used for checking when to send message to clients
+                global_changed = true;
+                
+                // write to log
                 Server_Window.logArea.append("Color sent to clients: " + current_light + "\n");
-                
-                
+
                 // update image
                 w.setImage(current_light);                
             }
-
-            global_timer--; 
+            countdown--; 
         };        
         
-        // Thread that listens to incoming TCP socket connections
+        // second thread: listens to incoming TCP socket connections
         Runnable incomingSockets = () -> {
             try (
                 // Create server socket with the given port number
@@ -109,25 +114,27 @@ public class TCP_Server
             }
         };
         
+        // first thread runs every second
         executor.scheduleAtFixedRate(timer, 0, 1, TimeUnit.SECONDS);
+        
+        // second thread runs continously
         executor.schedule(incomingSockets, 0, TimeUnit.SECONDS);
-        
-        
     }
 }
 
+// a thread is created for each client that connects to the server
 class ClientServer extends Thread
 {
     Socket connectSocket;
     InetAddress clientAddr;
-    
-    
-    
+
+    // contructor
     public ClientServer(Socket connectSocket)
     {
         this.connectSocket = connectSocket;
         clientAddr = connectSocket.getInetAddress();
-        System.out.println("Client connected: " + clientAddr);
+        
+        // add client's IP to the client list on GUI
         Server_Window.getClientListArea().append(clientAddr.toString() + "\n");
     }
 
@@ -140,44 +147,28 @@ class ClientServer extends Thread
                 BufferedReader in = new BufferedReader( new InputStreamReader(connectSocket.getInputStream()));
         )
         {
-            System.out.println("Changed: " + TCP_Server.changed);
-            
             String sendToClient;
+            long lastSec = 0;   // used for delay
             
             while((sendToClient = TCP_Server.current_light) != null && !sendToClient.isEmpty()){
-                System.out.print("");  
-                boolean test = TCP_Server.changed;
-                if(test){
-                    //System.out.println("Sending changes to client: " + TCP_Server.current_light);
-                    out.println(TCP_Server.current_light);                    
+                
+                // induce 1 sec delay, to prevent 'flooding' of messages to clients
+                long sec = System.currentTimeMillis() / 1000;
+                
+                if (sec != lastSec) {
+                    boolean sendMessage = TCP_Server.global_changed;
+                    
+                    if(sendMessage)
+                        out.println(TCP_Server.current_light);
+             
+                   lastSec = sec;
                 }
-            }
-            
-            /*
-            if(TCP_Server.global_timer == 2){
-                System.out.println("test");
-                out.println(TCP_Server.current_light);
-            }
-            */
-            /*
-            String receivedText;
-            // read from the connection socket
-            while (((receivedText = in.readLine())!=null))
-            {
-                System.out.println("Client [" + clientAddr.getHostAddress() + "]: > " + receivedText);
-                // Write the converted uppercase string to the connection socket
-                String ucaseText = receivedText.toUpperCase();
-                out.println(ucaseText);
-                System.out.println("Server [" + InetAddress.getLocalHost().getHostAddress() + "]: > " + ucaseText);
-            }
-            */
+            }            
                  
             // close the connection socket
             System.out.println("Server Exiting");
             connectSocket.close();
-
-        } catch (IOException e)
-        {
+        } catch (IOException e){
             System.out.println("Exception occurred when trying to communicate with the client " + clientAddr.getHostAddress());
             System.out.println(e.getMessage());
         }

@@ -1,42 +1,44 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/**
+ * Nettverk og skytjenester
+ * HiOA vår 2016
+ * Oblig 1
+ * Gruppe 13:
+ * Gretar Ævarsson - s198586
+ * Eivind Schulstad - s198752
+ **/
+
 package trafficlight;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-/**
- *
- * @author s198752
- */
 public class Server_Window extends JFrame{
+    // GUI elements
     public static JTextArea logArea, clientListArea;
-    private JSlider redSlider, yellowSlider, greenSlider;
-    private final String labelOff = "Off", labelRed = "Red", labelYellow = "Yellow", labelGreen = "Green";
+    private final JSlider redSlider, yellowSlider, greenSlider;    
     private int redDuration = 10, yellowDuration = 5, greenDuration = 15;
     private JLabel pictureLabel;
-    private ImageIcon image;
-    public static ArrayList<String> clients;
-    private JPanel masterPanel, grid, under;
+    private ImageIcon image;    
+    private final JPanel masterPanel, grid, under;
     private DrawPanel dp;
     
+    // List for incoming connections/clients
+    public static ArrayList<String> clients;
+    
     public Server_Window(){          
-        super("Trafficlight - group 13");
+        super("Trafficlight - Group 13");
        
-        //Put the radio buttons in a column in a panel.
+        // labels
         JPanel labelPanel = new JPanel(new GridLayout(0,1,15,15));
         labelPanel.add(new JLabel("RED", SwingConstants.RIGHT));
         labelPanel.add(new JLabel("YELLOW", SwingConstants.RIGHT));
         labelPanel.add(new JLabel("GREEN", SwingConstants.RIGHT));
         
+        // sliders
         redSlider = new JSlider(JSlider.HORIZONTAL, 5, 45, 10);
         redSlider.setMinorTickSpacing(1);
         redSlider.setMajorTickSpacing(10);
@@ -53,6 +55,12 @@ public class Server_Window extends JFrame{
         greenSlider.setPaintTicks(true);
         greenSlider.setPaintLabels(true);
         
+        JPanel sliderPanel = new JPanel(new GridLayout(0,1,15,15));
+        sliderPanel.add(redSlider);
+        sliderPanel.add(yellowSlider);
+        sliderPanel.add(greenSlider);
+        
+        // slider listeners
         redSlider.addChangeListener(new ChangeListener() { 
             @Override 
             public void stateChanged(ChangeEvent e) { 
@@ -86,13 +94,7 @@ public class Server_Window extends JFrame{
             }		
         });
         
-        JPanel sliderPanel = new JPanel(new GridLayout(0,1,15,15));
-        sliderPanel.add(redSlider);
-        sliderPanel.add(yellowSlider);
-        sliderPanel.add(greenSlider);
-        
-        
-        // set up text areas
+        // text areas
         logArea = new JTextArea();
         clientListArea = new JTextArea();
         
@@ -109,6 +111,7 @@ public class Server_Window extends JFrame{
         JScrollPane scroll1 = new JScrollPane(logArea);
         JScrollPane scroll2 = new JScrollPane(clientListArea);  
         
+        // server window has several layouts
         JPanel rowLabels = new JPanel(new GridLayout(0,2));
         JPanel rowTextArea = new JPanel(new GridLayout(0,2));
         JPanel textAreaPanel = new JPanel(new BorderLayout());
@@ -129,35 +132,15 @@ public class Server_Window extends JFrame{
         under = new JPanel(new BorderLayout());
         masterPanel.add(grid, BorderLayout.PAGE_START);
         masterPanel.add(under, BorderLayout.CENTER);
-        
         grid.add(labelPanel);
         grid.add(sliderPanel);
         grid.add(dp);
         under.add(textAreaPanel, BorderLayout.CENTER);
-        //setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
         this.getContentPane().add(masterPanel);
         setSize(400,800);
-        
-        
-        
-        //createAndShowGUI();
     }
-   
-    /*
-    public void createAndShowGUI(){
-        JFrame frame = new JFrame("Trafficlight");
-        
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        JComponent newContentPane = new Server_Window();
-        newContentPane.setOpaque(true);
-        frame.setContentPane(newContentPane);
-        //frame.setSize(800, 400);
-        frame.pack();
-        frame.setVisible(true);
-    }
-    */
     
+    // getters and setters
     public static JTextArea getLogArea() {
         return logArea;
     }
@@ -210,6 +193,7 @@ public class Server_Window extends JFrame{
         return image;
     }
 
+    // change image
     public void setImage(String color) {
         switch(color){
             case "red" : dp.changePicture("red_light.jpg");
@@ -221,18 +205,18 @@ public class Server_Window extends JFrame{
         }      
     }
 
-    
     private class DrawPanel extends JPanel{
-        Image image1;
+        Image image;
+        
         public void changePicture(String path){
-            image1 = new ImageIcon(path).getImage();
+            image = new ImageIcon(path).getImage();
             repaint();
         }
-        public void paintComponent(Graphics g)
-        {
+        
+        public void paintComponent(Graphics g){
             g.setColor(new Color(238,238,238));
             g.fillRect(10,10,134,76);
-            g.drawImage(image1,10,10,this);
+            g.drawImage(image,10,10,this);
         }
     }
 }
